@@ -1,0 +1,156 @@
+{% extends "web/base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <div class="main-panel">
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h3 class="page-title">
+                <span class="page-title-icon bg-gradient-primary text-white me-2">
+                  <i class="mdi mdi-home"></i>
+                </span> Profile
+                </h3>
+            </div>
+            <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Title:</h4>
+                            <div class="d-flex">
+                                <div class="d-flex align-items-center me-4 text-muted font-weight-light">
+                                    <i class="mdi mdi-account-outline icon-sm me-2"></i>
+                                    <span>{{ employee.title }}</span>
+                                </div>
+                            </div>
+                            <h4 style="margin-top: 10px" class="card-title">Department:</h4>
+                            <div class="d-flex">
+                                <div class="d-flex align-items-center me-4 text-muted font-weight-light">
+                                    <i class="mdi mdi-account-outline icon-sm me-2"></i>
+                                    <span>{{ employee.department }}</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form id="employee_form" class="form-sample">
+                            {% csrf_token %}
+                            <p class="card-description"> Personal info </p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">First Name</label>
+                                        <div class="col-sm-9">
+                                            <input id="first_name" name="first_name" type="text" class="form-control"
+                                                   value="{{ user.first_name }}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Last Name</label>
+                                        <div class="col-sm-9">
+                                            <input id="last_name" name="last_name" type="text" class="form-control"
+                                                   value="{{ user.last_name }}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Email</label>
+                                        <div class="col-sm-9">
+
+                                            <input type="email" id="email" name="email" class="form-control"
+                                                   value="{{ user.email }}"/>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Phone number</label>
+                                        <div class="col-sm-9">
+                                            <input id="phone_num" type="number" name="phone_num" class="form-control"
+                                                   value="{{ employee.phone }}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <div class="col-sm-9">
+                                            <input onclick="saveEmployee()" type="button"
+                                                   class="btn btn-gradient-primary me-2" value="Submit"></input>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="footer">
+            <div class="container-fluid d-flex justify-content-between">
+                <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © Karam Akil</span>
+            </div>
+        </footer>
+
+    </div>
+
+{% endblock %}
+
+{% block scriptPage %}
+    <script>
+        function saveEmployee() {
+            if ($("#employee_form").valid()) {
+                $.ajax({
+                    url: "{% url 'hrApplication:employee_form_post' %}",
+                    type: "POST",
+                    data: $("#employee_form").serialize(),
+                    success: function (response) {
+                        if (response.status == "SUCCESS") {
+                            $.confirm({
+                                title: 'Success!',
+                                content: 'Data Saved!',
+                                buttons: {
+                                    Ok: function () {
+                                        location.reload()
+                                    },
+                                }
+                            });
+                        }
+                        console.log(response);
+                    }
+                })
+            }
+        }
+
+        $("#employee_form").validate({
+            rules: {
+                first_name: "required",
+                last_name: "required",
+                email: {
+                    required: true,
+                    email: true
+                },
+                phone_num: {
+                    required: true,
+                    number: true
+                },
+            },
+        });
+    </script>
+{% endblock %}

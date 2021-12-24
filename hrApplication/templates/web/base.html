@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Hr System</title>
+
+    {% include "web/user_controls/common_style.html" %}
+
+</head>
+
+<body>
+
+<div class="container-scroller">
+
+    {% block header %}
+        {% include "web/user_controls/header.html" %}
+    {% endblock %}
+
+    <div class="container-fluid page-body-wrapper">
+
+        {% include "web/user_controls/nav_sidebar.html" %}
+
+        {% block content %}
+        {% endblock %}
+
+    </div>
+
+
+</div>
+
+<script src="{% static 'web/js/vendor.bundle.base.js' %}"></script>
+<script src="{% static 'web/js/Chart.min.js' %}"></script>
+<script src="{% static 'web/js/jquery.cookie.js' %}"></script>
+<script src="{% static 'web/js/off-canvas.js' %}"></script>
+<script src="{% static 'web/js/hoverable-collapse.js' %}"></script>
+<script src="{% static 'web/js/misc.js' %}"></script>
+<script src="{% static 'web/js/dashboard.js' %}"></script>
+<script src="{% static 'web/js/todolist.js' %}"></script>
+<script src="{% static 'web/js/jquery.min.js   ' %}"></script>
+<script src="{% static 'web/js/jquery.validate.min.js' %}"></script>
+<script src="{% static 'web/js/jquery-confirm.min.js' %}"></script>
+
+<script src="{% static 'web/js/jquery.dataTables.js' %}"></script>
+<script src="{% static 'web/js/dataTables.responsive.min.js' %}"></script>
+
+
+{% block scriptPage %}
+{% endblock %}
+
+
+</body>
+</html>

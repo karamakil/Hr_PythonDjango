@@ -1,0 +1,128 @@
+{% extends "web/base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <div class="main-panel">
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h3 class="page-title">
+                <span class="page-title-icon bg-gradient-primary text-white me-2">
+                  <i class="mdi mdi-av-timer"></i>
+                </span> Attendance
+                </h3>
+            </div>
+            <div class="col-md-4">
+                <div class="card punch-status">
+                    <div class="card-body">
+                        <h5 class="card-title">Timesheet:
+                            <small id="checkInVal" class="text-muted">{% now "jS F Y " %}</small>
+                        </h5>
+                        <div class="punch-det"><h6>Check In at</h6>
+                            <p>{{ attendance.checkIn }}</p>
+                        </div>
+                        <div class="punch-det"><h6>Check Out at</h6>
+                            <p>{{ attendance.checkOut }}</p>
+                        </div>
+                        <div class="punch-info" style="margin-bottom: 10px">
+                            <div class="punch-hours"><span>{{ hours_num }} hrs</span></div>
+                        </div>
+                        {% if not is_complete_attendance %}
+                            <div class="punch-btn-section">
+                                <button onclick="attend()" type="button"
+                                        class="btn btn-primary punch-btn">{{ is_check_in }}</button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-12">
+                <h1>table</h1>
+
+                <div class="table-responsive">
+                    <table id="attendanceTable" class="table display responsive nowrap" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Working Hours</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+
+            <form id="hddfields" name="hddfields">
+                {% csrf_token %}
+                <input id="is_check_in" name="is_check_in" type="hidden" value="{{ is_check_in }}">
+                <input id="attendance_id" name="attendance_id" type="hidden" value="{{ attendance.id }}">
+            </form>
+
+        </div>
+    </div>
+
+
+
+{% endblock %}
+
+
+
+{% block scriptPage %}
+
+    <script>
+
+        function attend() {
+            $.confirm({
+                title: 'Attendance!',
+                content: 'Do you want to continue?',
+                buttons: {
+                    Ok: function () {
+                        $.ajax({
+                            url: "{% url 'hrApplication:attendance_post' %}",
+                            type: "POST",
+                            data: $("#hddfields").serialize(),
+                            success: function (response) {
+                                if (response.status == "SUCCESS") {
+                                    $.confirm({
+                                        title: 'Success!',
+                                        content: 'Data Saved!',
+                                        buttons: {
+                                            Ok: function () {
+                                                location.reload()
+                                            },
+                                        }
+                                    });
+                                }
+                            }
+                        })
+                    },
+                    close: function () {
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $('#attendanceTable').DataTable({
+                "ajax": "{% url 'hrApplication:attendance_grid_Data' %}",
+                "processing": true,
+                "serverSide": true,
+                "info": true,
+                "stateSave": true,
+                "sDom": 'lrtip',
+                "lengthMenu": [[10, 20, 50], [10, 20, 50]],
+                "columns": [
+                    {"data": "checkIn"},
+                    {"data": "checkOut"},
+                    {"data": "working_hours", 'orderable': false},
+                ],
+            });
+        });
+
+    </script>
+
+
+{% endblock %}

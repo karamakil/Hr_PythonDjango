@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Login In Page</title>
+
+    {% include "web/user_controls/common_style.html" %}
+
+</head>
+<body>
+<div class="container-scroller">
+    <div class="container-fluid page-body-wrapper full-page-wrapper">
+        <div class="content-wrapper d-flex align-items-center auth">
+            <div class="row flex-grow">
+                <div class="col-lg-4 mx-auto">
+                    <div class="auth-form-light text-left p-5">
+                        <div class="brand-logo">
+                        </div>
+                        <h4>Hello! let's get started</h4>
+                        <h6 class="font-weight-light">Sign in to continue.</h6>
+
+                        <form class="pt-3" id="login_form" action="{% url 'hrApplication:login_auth' %}" method="post"
+                              enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input type="text" class="form-control form-control-lg" id="userNameEmail"
+                                       name="userNameEmail" placeholder="Username">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control form-control-lg" id="userPass"
+                                       name="userPass" placeholder="Password">
+                            </div>
+                            <div class="mt-3">
+                                <input type="submit"
+                                       class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn"></input>
+                            </div>
+                        </form>
+
+                        {% if  not_auth %}
+                            <div class="form-group">
+                                <div class=" alert alert-danger text-center" role="alert">Invalid username or password.
+                                </div>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
