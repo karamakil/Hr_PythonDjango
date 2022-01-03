@@ -57,9 +57,9 @@ def employee_form_post(request):
         emp.phone = request.POST['phone_num']
         user.save()
         emp.save()
+        return JsonResponse({'status': "SUCCESS"}, status=200)
     except Exception as e:
         return JsonResponse({'status': "FAILED"}, status=500)
-    return JsonResponse({'status': "SUCCESS"}, status=200)
 
 
 @login_required(login_url='/login')
