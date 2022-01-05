@@ -124,7 +124,8 @@
                                 content: 'Data Saved!',
                                 buttons: {
                                     Ok: function () {
-                                        location.reload()
+                                        $('#txtFullName').text(response.full_name);
+                                        {#location.reload()#}
                                     },
                                 }
                             });

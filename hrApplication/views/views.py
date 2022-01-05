@@ -1,17 +1,13 @@
-import json
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from hrApplication.models import Employee, Attendance, Vacation
 from django.http import JsonResponse
 from datetime import datetime, timedelta
 from django.db.models import Q
 from hrApplication.helpers.enum import attendance_type
 from hrApplication.helpers.helper import strfdelta, getgriddatapaginated, ajax_response
-from django.core.serializers import serialize
-from django.core import serializers
 
 
 @login_required(login_url='/login')
@@ -51,7 +47,8 @@ def employee_form_post(request):
         emp.phone = request.POST['phone_num']
         user.save()
         emp.save()
-        return JsonResponse({'status': "SUCCESS"}, status=200)
+        full_name = "{0} {1}".format(user.first_name, user.last_name)
+        return JsonResponse({'status': "SUCCESS", 'full_name': full_name}, status=200)
     except Exception as e:
         return JsonResponse({'status': "FAILED"}, status=500)
 
@@ -77,17 +74,19 @@ def attendance(request):
 
 
 def attendance_post(request):
-    is_check_in = request.POST['is_check_in']
-    attendance_id = request.POST['attendance_id']
-    attendance_obj = Attendance.objects.filter(id=attendance_id).first() if attendance_id else Attendance()
-    if is_check_in == attendance_type.check_in.value:
-        attendance_obj.check_in = datetime.now()
-    else:
-        attendance_obj.check_out = datetime.now()
-    attendance_obj.employee = request.user.employee
-    attendance_obj.save()
-    return JsonResponse({'status': 'SUCCESS'}, status=200)
-
+    try:
+        is_check_in = request.POST['is_check_in']
+        attendance_id = request.POST['attendance_id']
+        attendance_obj = Attendance.objects.filter(id=attendance_id).first() if attendance_id else Attendance()
+        if is_check_in == attendance_type.check_in.value:
+            attendance_obj.check_in = datetime.now()
+        else:
+            attendance_obj.check_out = datetime.now()
+        attendance_obj.employee = request.user.employee
+        attendance_obj.save()
+        return JsonResponse({'status': 'SUCCESS'}, status=200)
+    except Exception as e:
+        return JsonResponse({'status': "FAILED"}, status=500)
 
 def attendance_grid_data(request):
     grid_columns = ('check_in', 'check_out')
@@ -190,9 +189,8 @@ def salary(request):
         today = datetime.now()
         attendance_list = Attendance.objects.filter(check_in__year=today.year,
                                                     check_in__month=today.month,
-                                                    employee = request.user.employee)
+                                                    employee=request.user.employee)
         hour_rate = request.user.employee.hour_rate
-        total_salary = 0
         total_working_hours = 0
 
         for att in attendance_list:
