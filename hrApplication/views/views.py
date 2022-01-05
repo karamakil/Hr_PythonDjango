@@ -16,13 +16,7 @@ from django.core import serializers
 
 @login_required(login_url='/login')
 def home(request):
-    ctx = {}
-    user = request.user
-    ctx["employee"] = Employee.objects.get(user=request.user)
-    ctx["first_name"] = user.first_name
-    ctx["last_name"] = user.last_name
-    ctx['user'] = user
-    return render(request, 'web/home.html', ctx)
+    return render(request, 'web/home.html')
 
 
 def login_form(request):
@@ -30,8 +24,8 @@ def login_form(request):
 
 
 def login_auth(request):
-    name = request.POST['userNameEmail']
-    password = request.POST['userPass']
+    name = request.POST['username_email']
+    password = request.POST['user_pass']
     user = authenticate(request, username=name, password=password)
     if user:
         login(request, user)
@@ -64,27 +58,19 @@ def employee_form_post(request):
 
 @login_required(login_url='/login')
 def attendance(request):
-    try:
-        ctx = {}
-        user = request.user
-        ctx["first_name"] = user.first_name
-        ctx["last_name"] = user.last_name
+    ctx = {}
+    today = datetime.now().date()
+    tomorrow = today + timedelta(1)
 
-        today = datetime.now().date()
-        tomorrow = today + timedelta(1)
-
-        att = Attendance.objects.get(Q(checkIn__gt=today)
-                                     & Q(checkIn__lt=tomorrow)
-                                     & Q(employee=user.employee))
-
-        ctx['hours_num'] = strfdelta((att.checkOut - att.checkIn),
-                                     "{hours}:{minutes}:{seconds}") if att.checkOut is not None else ''
-    except Attendance.DoesNotExist:
-        att = None
+    att = Attendance.objects.filter(Q(check_in__gt=today)
+                                    & Q(check_in__lt=tomorrow)
+                                    & Q(employee=request.user.employee)).first()
     ctx['attendance'] = att
     if att:
+        ctx['hours_num'] = strfdelta((att.check_out - att.check_in),
+                                     "{hours}:{minutes}:{seconds}") if att.check_out else ''
         ctx['is_check_in'] = attendance_type.check_out.value
-        ctx['is_complete_attendance'] = True if att.checkIn != None and att.checkOut != None else False
+        ctx['is_complete_attendance'] = True if att.check_in and att.check_out else False
     else:
         ctx['is_check_in'] = attendance_type.check_in.value
     return render(request, 'web/attendance.html', ctx)
@@ -92,40 +78,34 @@ def attendance(request):
 
 def attendance_post(request):
     is_check_in = request.POST['is_check_in']
-    attendanceid = request.POST['attendance_id']
-
-    attendance_obj = Attendance.objects.get(id=attendanceid) if attendanceid else Attendance()
-
+    attendance_id = request.POST['attendance_id']
+    attendance_obj = Attendance.objects.filter(id=attendance_id).first() if attendance_id else Attendance()
     if is_check_in == attendance_type.check_in.value:
-        attendance_obj.checkIn = datetime.now()
-    elif is_check_in == attendance_type.check_out.value:
-        attendance_obj.checkOut = datetime.now()
+        attendance_obj.check_in = datetime.now()
+    else:
+        attendance_obj.check_out = datetime.now()
     attendance_obj.employee = request.user.employee
     attendance_obj.save()
     return JsonResponse({'status': 'SUCCESS'}, status=200)
 
 
 def attendance_grid_data(request):
-    grid_columns = ('checkIn', 'checkOut')
-    data = Attendance.objects.filter(employee=request.user.employee)
-
-    name = grid_columns[int(request.GET['order[0][column]'])]
-
-    ctx = getgriddatapaginated(request, data, name)
-
+    grid_columns = ('check_in', 'check_out')
+    attendance_list = Attendance.objects.filter(employee=request.user.employee)
+    sort_column = grid_columns[int(request.GET['order[0][column]'])]
+    ctx = getgriddatapaginated(request, attendance_list, sort_column)
     json_data = []
     for item in ctx['data']:
         dict = {}
-        dict['checkIn'] = item.checkIn.strftime("%Y-%m-%d %H:%M:%S")
-        if item.checkOut:
-            dict['checkOut'] = item.checkOut.strftime("%Y-%m-%d %H:%M:%S")
-            dict['working_hours'] = strfdelta((item.checkOut - item.checkIn), "{hours}:{minutes}")
+        dict['check_in'] = item.check_in.strftime("%Y-%m-%d %H:%M:%S")
+        if item.check_out:
+            dict['check_out'] = item.check_out.strftime("%Y-%m-%d %H:%M:%S")
+            dict['working_hours'] = strfdelta((item.check_out - item.check_in), "{hours}:{minutes}")
         else:
-            dict['checkOut'] = ''
+            dict['check_out'] = ''
             dict['working_hours'] = ''
         json_data.append(dict)
     ctx['data'] = json_data
-
     return ajax_response(ctx)
 
 
@@ -133,32 +113,22 @@ def attendance_grid_data(request):
 def vacation(request):
     ctx = {}
     count = Vacation.objects.filter(employee=request.user.employee).count()
-    user = request.user
-    ctx["employee"] = Employee.objects.get(user=request.user)
-    ctx["first_name"] = user.first_name
-    ctx["last_name"] = user.last_name
     ctx['remaining_vacation_days'] = 15 - count
-
     return render(request, 'web/vacation.html', ctx)
 
 
 def vacation_grid_data(request):
-    grid_columns = ('vacationDate', 'reason')
-    data = Vacation.objects.filter(employee=request.user.employee)
-
-    name = grid_columns[int(request.GET['order[0][column]'])]
-
-    ctx = getgriddatapaginated(request, data, name)
+    grid_columns = ('vacation_date', 'reason')
+    vacation_list = Vacation.objects.filter(employee=request.user.employee)
+    sort_column = grid_columns[int(request.GET['order[0][column]'])]
+    ctx = getgriddatapaginated(request, vacation_list, sort_column)
 
     json_data = []
     for item in ctx['data']:
         dict = {}
-
         dict['id'] = item.id
-        dict['vacationDate'] = item.vacationDate.strftime("%Y-%m-%d")
+        dict['vacation_date'] = item.vacation_date.strftime("%Y-%m-%d")
         dict['reason'] = item.reason
-        dict['edit'] = ''
-        dict['delete'] = ''
         json_data.append(dict)
     ctx['data'] = json_data
     return ajax_response(ctx)
@@ -167,32 +137,38 @@ def vacation_grid_data(request):
 def vacation_form_save(request):
     try:
         count = Vacation.objects.filter(employee=request.user.employee).count()
-
-        vacationid = request.POST['Vacation_Id']
+        vacation_id = request.POST['Vacation_Id']
         vacation_date = request.POST['Vacation_Date']
         vacation_reason = request.POST['Vacation_Reason']
 
-        similar_vacation = Vacation.objects.filter(vacationDate=vacation_date).count()
-
-        if vacationid:
-            edit_similar_vacation = Vacation.objects.filter(vacationDate=vacation_date).exclude(id=vacationid).count()
-
+        if vacation_id != '':
+            edit_similar_vacation = Vacation.objects.filter(Q(vacation_date=vacation_date)
+                                                            & Q(employee=request.user.employee)) \
+                .exclude(id=vacation_id).count()
             if edit_similar_vacation != 0:
-                return JsonResponse({'status': "Vacation already saved!"}, status=200)
-            vacation = Vacation.objects.get(id=vacationid)
+                status = "Vacation already saved!"
+            else:
+                vacation = Vacation.objects.filter(id=vacation_id).first()
+                status = 'SUCCESS'
         elif count < 15:
+            similar_vacation = Vacation.objects.filter(
+                Q(vacation_date=vacation_date) & Q(employee=request.user.employee)).count()
             if similar_vacation != 0:
-                return JsonResponse({'status': "Vacation already saved!"}, status=200)
-            vacation = Vacation()
-            count = count + 1
+                status = "Vacation already saved!"
+            else:
+                vacation = Vacation()
+                count = count + 1
+                status = 'SUCCESS'
         else:
-            return JsonResponse({'status': "You have reached your maximum number of vacations"}, status=200)
+            status = "You have reached your maximum number of vacations"
 
-        vacation.vacationDate = vacation_date
-        vacation.reason = vacation_reason
-        vacation.employee = request.user.employee
-        vacation.save()
-        return JsonResponse({'status': "SUCCESS", "remaining_vacation_days": 15 - count}, status=200)
+        if status == 'SUCCESS':
+            vacation.vacation_date = vacation_date
+            vacation.reason = vacation_reason
+            vacation.employee = request.user.employee
+            vacation.save()
+
+        return JsonResponse({'status': status, "remaining_vacation_days": 15 - count}, status=200)
 
     except Exception as e:
         return JsonResponse({'status': "FAILED"}, status=500)
@@ -200,9 +176,34 @@ def vacation_form_save(request):
 
 def vacation_delete(request):
     try:
-        vacation_id = request.POST['vacationId']
-        Vacation.objects.get(pk=vacation_id).delete()
+        vacation_id = request.POST['vacation_id']
+        Vacation.objects.filter(pk=vacation_id).delete()
         count = Vacation.objects.filter(employee=request.user.employee).count()
         return JsonResponse({'status': "SUCCESS", "remaining_vacation_days": 15 - count}, status=200)
+    except Exception as e:
+        return JsonResponse({'status': "FAILED"}, status=500)
+
+
+@login_required(login_url='/login')
+def salary(request):
+    try:
+        today = datetime.now()
+        attendance_list = Attendance.objects.filter(check_in__year=today.year,
+                                                    check_in__month=today.month,
+                                                    employee = request.user.employee)
+        hour_rate = request.user.employee.hour_rate
+        total_salary = 0
+        total_working_hours = 0
+
+        for att in attendance_list:
+            if att.check_in and att.check_out:
+                diff = att.check_out - att.check_in
+                days, seconds = diff.days, diff.seconds
+                hours = days * 24 + round(seconds / 3600, 2)
+                total_working_hours = total_working_hours + hours
+        ctx = {}
+        ctx['total_working_hours'] = total_working_hours
+        ctx['total_salary'] = round(total_working_hours * hour_rate, 2)
+        return render(request, 'web/salary.html', ctx)
     except Exception as e:
         return JsonResponse({'status': "FAILED"}, status=500)

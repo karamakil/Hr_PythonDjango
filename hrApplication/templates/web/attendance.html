@@ -19,10 +19,10 @@
                             <small id="checkInVal" class="text-muted">{% now "jS F Y " %}</small>
                         </h5>
                         <div class="punch-det"><h6>Check In at</h6>
-                            <p>{{ attendance.checkIn }}</p>
+                            <p>{{ attendance.check_in }}</p>
                         </div>
                         <div class="punch-det"><h6>Check Out at</h6>
-                            <p>{{ attendance.checkOut }}</p>
+                            <p>{{ attendance.check_out }}</p>
                         </div>
                         <div class="punch-info" style="margin-bottom: 10px">
                             <div class="punch-hours"><span>{{ hours_num }} hrs</span></div>
@@ -37,10 +37,8 @@
                 </div>
             </div>
 
-
             <div class="col-12">
-                <h1>table</h1>
-
+                <h1>Attendance Table</h1>
                 <div class="table-responsive">
                     <table id="attendanceTable" class="table display responsive nowrap" style="width:100%">
                         <thead>
@@ -53,8 +51,6 @@
                     </table>
                 </div>
             </div>
-
-
             <form id="hddfields" name="hddfields">
                 {% csrf_token %}
                 <input id="is_check_in" name="is_check_in" type="hidden" value="{{ is_check_in }}">
@@ -115,8 +111,8 @@
                 "sDom": 'lrtip',
                 "lengthMenu": [[10, 20, 50], [10, 20, 50]],
                 "columns": [
-                    {"data": "checkIn"},
-                    {"data": "checkOut"},
+                    {"data": "check_in"},
+                    {"data": "check_out"},
                     {"data": "working_hours", 'orderable': false},
                 ],
             });

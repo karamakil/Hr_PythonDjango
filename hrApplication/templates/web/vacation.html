@@ -95,7 +95,7 @@
                             url: "{% url 'hrApplication:vacation_delete' %}",
                             type: "POST",
                             headers: {"X-CSRFToken": '{{csrf_token}}'},
-                            data: {vacationId: id},
+                            data: {vacation_id: id},
                             success: function (response) {
                                 if (response.status == "SUCCESS") {
                                     $.confirm({
@@ -185,25 +185,25 @@
                 "autoWidth": false,
                 "lengthMenu": [[10, 20, 50], [10, 20, 50]],
                 "columns": [
-                    {"data": "vacationDate"},
+                    {"data": "vacation_date"},
                     {"data": "reason"},
-                    {"data": "edit"},
-                    {"data": "delete"},
                 ],
                 'columnDefs': [
                     {
                         'targets': 2,
                         'searchable': false,
                         'orderable': false,
+                        "data": null,
                         'render': function (data, type, row, meta) {
                             return '<div style="display:block">' +
-                                '<button onclick="EditVacation(this, ' + row.id + ')" type="button" data-date="' + row.vacationDate + '" data-reason="' + row.reason + '"class="edit_action btn btn-warning btn-xs" data-toggle="modal" data-target="#modal_edit" style="margin:3px"><i class="fa fa-edit"></i> Edit</button>' +
+                                '<button onclick="EditVacation(this, ' + row.id + ')" type="button" data-date="' + row.vacation_date + '" data-reason="' + row.reason + '"class="edit_action btn btn-warning btn-xs" data-toggle="modal" data-target="#modal_edit" style="margin:3px"><i class="fa fa-edit"></i> Edit</button>' +
                                 '</div>';
                         }
                     },
                     {
                         'searchable': false,
                         'orderable': false,
+                        "data": null,
                         'targets': 3,
                         'render': function (data, type, full_row, meta) {
                             return '<div style="display:block">' +

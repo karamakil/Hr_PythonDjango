@@ -20,17 +20,16 @@
                             <div class="d-flex">
                                 <div class="d-flex align-items-center me-4 text-muted font-weight-light">
                                     <i class="mdi mdi-account-outline icon-sm me-2"></i>
-                                    <span>{{ employee.title }}</span>
+                                    <span>{{ user.employee.title }}</span>
                                 </div>
                             </div>
                             <h4 style="margin-top: 10px" class="card-title">Department:</h4>
                             <div class="d-flex">
                                 <div class="d-flex align-items-center me-4 text-muted font-weight-light">
                                     <i class="mdi mdi-account-outline icon-sm me-2"></i>
-                                    <span>{{ employee.department }}</span>
+                                    <span>{{ user.employee.department }}</span>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -66,10 +65,8 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Email</label>
                                         <div class="col-sm-9">
-
                                             <input type="email" id="email" name="email" class="form-control"
                                                    value="{{ user.email }}"/>
-
                                         </div>
                                     </div>
                                 </div>
@@ -77,8 +74,8 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Phone number</label>
                                         <div class="col-sm-9">
-                                            <input id="phone_num" type="number" name="phone_num" class="form-control"
-                                                   value="{{ employee.phone }}"/>
+                                            <input id="phone_num" type="number" name="phone_num" maxlength="8" class="form-control"
+                                                   value="{{ user.employee.phone }}"/>
                                         </div>
                                     </div>
                                 </div>
@@ -148,7 +145,8 @@
                 },
                 phone_num: {
                     required: true,
-                    number: true
+                    number: true,
+                    maxlength: 8
                 },
             },
         });

@@ -7,15 +7,16 @@ class Employee(models.Model):
     phone = models.IntegerField(null=True, default=None)
     title = models.CharField(max_length=128)
     department = models.CharField(max_length=128, null=True)
+    hour_rate = models.FloatField(null=True)
 
 
 class Attendance(models.Model):
-    checkIn = models.DateTimeField()
-    checkOut = models.DateTimeField(null=True)
+    check_in = models.DateTimeField()
+    check_out = models.DateTimeField(null=True)
     employee = models.ForeignKey(Employee, null=False, on_delete=models.CASCADE)
 
 
 class Vacation(models.Model):
-    vacationDate = models.DateTimeField(null=False)
+    vacation_date = models.DateTimeField(null=False)
     reason = models.CharField(max_length=350)
     employee = models.ForeignKey(Employee, null=False, on_delete=models.CASCADE)

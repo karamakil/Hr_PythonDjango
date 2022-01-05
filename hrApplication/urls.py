@@ -1,7 +1,6 @@
 from django.urls import path
 from hrApplication.views import views
 
-
 app_name = 'hrApplication'
 urlpatterns = [
     path('', views.home, name='home_page'),
@@ -19,4 +18,6 @@ urlpatterns = [
     path('vacation_grid_Data', views.vacation_grid_data, name='vacation_grid_Data'),
     path('vacation_form_save', views.vacation_form_save, name='vacation_form_save'),
     path('vacation_delete', views.vacation_delete, name='vacation_delete'),
+
+    path('salary', views.salary, name='salary'),
 ]

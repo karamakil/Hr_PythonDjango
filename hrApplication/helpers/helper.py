@@ -12,25 +12,26 @@ def strfdelta(tdelta, fmt):
     return fmt.format(**d)
 
 
-def getgriddatapaginated(request, rs,sort_column):
+def getgriddatapaginated(request, rs, sort_column):
     rows = int(request.GET['length'])
     page = int(request.GET['start'])
     sort_by = 'id' if not sort_column else sort_column
     sord = request.GET['order[0][dir]']
     end = rows + page
-    tototalrecords = rs.count()
+    tototal_records = rs.count()
     sortOn = "-" + sort_by if sord == "desc" else sort_by
     rs = rs.order_by(sortOn)[page: end]
     ctx = {}
     ctx['draw'] = request.GET['draw']
-    ctx['recordsFiltered'] = tototalrecords
-    ctx['recordsTotal'] = tototalrecords
+    ctx['recordsFiltered'] = tototal_records
+    ctx['recordsTotal'] = tototal_records
     ctx['data'] = rs
     return ctx
 
 
 def ajax_response(data):
-    response = HttpResponse(json.dumps(data, ensure_ascii=False, default = json_default_fn), content_type = 'application/json')
+    response = HttpResponse(json.dumps(data, ensure_ascii=False, default=json_default_fn),
+                            content_type='application/json')
     return response
 
 
