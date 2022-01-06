@@ -1,7 +1,7 @@
 from django.urls import path
-from hrApplication.views import views
+from hr_application.views import views
 
-app_name = 'hrApplication'
+app_name = 'hr_application'
 urlpatterns = [
     path('', views.home, name='home_page'),
     path('login', views.login_form, name='login'),

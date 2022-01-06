@@ -1,4 +1,4 @@
-"""HrSystem URL Configuration
+"""hr_project URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.0/topics/http/urls/
@@ -21,5 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path('admin/login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     # path('admin/login/', ELoginView.as_view()),
-    path('', include('hrApplication.urls')),
+    path('', include('hr_application.urls')),
 ]

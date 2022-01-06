@@ -2,12 +2,12 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
-from hrApplication.models import Employee, Attendance, Vacation
+from hr_application.models import Employee, Attendance, Vacation
 from django.http import JsonResponse
 from datetime import datetime, timedelta
 from django.db.models import Q
-from hrApplication.helpers.enum import attendance_type
-from hrApplication.helpers.helper import strfdelta, getgriddatapaginated, ajax_response
+from hr_application.helpers.enum import attendance_type
+from hr_application.helpers.helper import strfdelta, getgriddatapaginated, ajax_response
 
 
 @login_required(login_url='/login')
@@ -26,7 +26,7 @@ def login_auth(request):
     if user:
         login(request, user)
         if not user.is_superuser:
-            return redirect('hrApplication:home_page')
+            return redirect('hr_application:home_page')
         else:
             return HttpResponseRedirect('admin')
     return render(request, 'login.html', {"not_auth": True})
@@ -34,7 +34,7 @@ def login_auth(request):
 
 def log_out(request):
     logout(request)
-    return redirect('hrApplication:login')
+    return redirect('hr_application:login')
 
 
 def employee_form_post(request):

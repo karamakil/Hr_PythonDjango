@@ -92,7 +92,7 @@
                 buttons: {
                     Ok: function () {
                         $.ajax({
-                            url: "{% url 'hrApplication:vacation_delete' %}",
+                            url: "{% url 'hr_application:vacation_delete' %}",
                             type: "POST",
                             headers: {"X-CSRFToken": '{{csrf_token}}'},
                             data: {vacation_id: id},
@@ -133,7 +133,7 @@
                     buttons: {
                         Ok: function () {
                             $.ajax({
-                                url: "{% url 'hrApplication:vacation_form_save' %}",
+                                url: "{% url 'hr_application:vacation_form_save' %}",
                                 type: "POST",
                                 data: $("#vacationForm").serialize(),
                                 success: function (response) {
@@ -176,7 +176,7 @@
 
         function initDataTable() {
             vacationDataTable = $('#vacationTable').DataTable({
-                "ajax": "{% url 'hrApplication:vacation_grid_Data' %}",
+                "ajax": "{% url 'hr_application:vacation_grid_Data' %}",
                 "processing": true,
                 "serverSide": true,
                 "info": true,

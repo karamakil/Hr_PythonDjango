@@ -77,7 +77,7 @@
                 buttons: {
                     Ok: function () {
                         $.ajax({
-                            url: "{% url 'hrApplication:attendance_post' %}",
+                            url: "{% url 'hr_application:attendance_post' %}",
                             type: "POST",
                             data: $("#hddfields").serialize(),
                             success: function (response) {
@@ -103,7 +103,7 @@
 
         $(document).ready(function () {
             $('#attendanceTable').DataTable({
-                "ajax": "{% url 'hrApplication:attendance_grid_Data' %}",
+                "ajax": "{% url 'hr_application:attendance_grid_Data' %}",
                 "processing": true,
                 "serverSide": true,
                 "info": true,

@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class HrapplicationConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'hrApplication'
+    name = 'hr_application'

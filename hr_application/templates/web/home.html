@@ -114,7 +114,7 @@
         function saveEmployee() {
             if ($("#employee_form").valid()) {
                 $.ajax({
-                    url: "{% url 'hrApplication:employee_form_post' %}",
+                    url: "{% url 'hr_application:employee_form_post' %}",
                     type: "POST",
                     data: $("#employee_form").serialize(),
                     success: function (response) {
